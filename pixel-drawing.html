@@ -1,92 +1,92 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Collaborative Pixel Drawing</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                text-align: center;
-                margin-top: 50px;
-            }
-            #canvas {
-                border: 1px solid black;
-                margin-top: 20px;
-                image-rendering: pixelated;
-            }
-            #controls {
-                margin-top: 20px;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>Collaborative Pixel Drawing</h1>
-        <canvas id="canvas" width="512" height="512"></canvas>
-        <div id="controls">
-            <input type="color" id="color-picker" value="#000000">
-            <button id="draw-button">Draw</button>
-            <button id="erase-button">Erase</button>
-        </div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-        <script>
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-            const colorPicker = document.getElementById('color-picker');
-            const drawButton = document.getElementById('draw-button');
-            const eraseButton = document.getElementById('erase-button');
-            const resolution = 2; // Each pixel is 2x2 on the canvas
-            const COLS = canvas.width / resolution;
-            const ROWS = canvas.height / resolution;
-            let drawing = false;
-            let erasing = false;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaborative Pixel Drawing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #canvas {
+            border: 1px solid black;
+            margin-top: 20px;
+            image-rendering: pixelated;
+        }
+        #controls {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Collaborative Pixel Drawing</h1>
+    <canvas id="canvas" width="512" height="512"></canvas>
+    <div id="controls">
+        <input type="color" id="color-picker" value="#000000">
+        <button id="draw-button">Draw</button>
+        <button id="erase-button">Erase</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const colorPicker = document.getElementById('color-picker');
+        const drawButton = document.getElementById('draw-button');
+        const eraseButton = document.getElementById('erase-button');
+        const resolution = 2; // Each pixel is 2x2 on the canvas
+        const COLS = canvas.width / resolution;
+        const ROWS = canvas.height / resolution;
+        let drawing = false;
+        let erasing = false;
 
-            const socket = io();
+        const socket = io();
 
-            canvas.addEventListener('mousedown', () => drawing = true);
-            canvas.addEventListener('mouseup', () => drawing = false);
-            canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mousedown', () => drawing = true);
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('mousemove', draw);
 
-            drawButton.addEventListener('click', () => {
-                erasing = false;
-                drawButton.disabled = true;
-                eraseButton.disabled = false;
-            });
+        drawButton.addEventListener('click', () => {
+            erasing = false;
+            drawButton.disabled = true;
+            eraseButton.disabled = false;
+        });
 
-            eraseButton.addEventListener('click', () => {
-                erasing = true;
-                drawButton.disabled = false;
-                eraseButton.disabled = true;
-            });
+        eraseButton.addEventListener('click', () => {
+            erasing = true;
+            drawButton.disabled = false;
+            eraseButton.disabled = true;
+        });
 
-            function draw(event) {
-                if (!drawing) return;
-                const x = Math.floor(event.offsetX / resolution);
-                const y = Math.floor(event.offsetY / resolution);
-                const color = erasing ? '#FFFFFF' : colorPicker.value;
-                socket.emit('draw_pixel', { x, y, color });
-            }
+        function draw(event) {
+            if (!drawing) return;
+            const x = Math.floor(event.offsetX / resolution);
+            const y = Math.floor(event.offsetY / resolution);
+            const color = erasing ? '#FFFFFF' : colorPicker.value;
+            socket.emit('draw_pixel', { x, y, color });
+        }
 
-            socket.on('draw_pixel', ({ x, y, color }) => {
-                ctx.fillStyle = color;
-                ctx.fillRect(x * resolution, y * resolution, resolution, resolution);
-            });
+        socket.on('draw_pixel', ({ x, y, color }) => {
+            ctx.fillStyle = color;
+            ctx.fillRect(x * resolution, y * resolution, resolution, resolution);
+        });
 
-            socket.on('initialize_canvas', (canvasState) => {
-                for (let x = 0; x < COLS; x++) {
-                    for (let y = 0; y < ROWS; y++) {
-                        ctx.fillStyle = canvasState[x][y];
-                        ctx.fillRect(x * resolution, y * resolution, resolution, resolution);
-                    }
+        socket.on('initialize_canvas', (canvasState) => {
+            for (let x = 0; x < COLS; x++) {
+                for (let y = 0; y < ROWS; y++) {
+                    ctx.fillStyle = canvasState[x][y];
+                    ctx.fillRect(x * resolution, y * resolution, resolution, resolution);
                 }
-            });
-
-            function initializeCanvas() {
-                socket.emit('request_canvas_state');
             }
+        });
 
-            initializeCanvas();
-        </script>
-        <a href="/">Home</a>
-    </body>
-    </html>
+        function initializeCanvas() {
+            socket.emit('request_canvas_state');
+        }
+
+        initializeCanvas();
+    </script>
+    <a href="/">Home</a>
+</body>
+</html>
