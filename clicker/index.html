@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -29,5 +29,96 @@
         });
     </script>
     <a href="/">Home</a>
+</body>
+</html>
+ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clicker Game</title>
+  <style>
+    :root {
+      --main-color: #4caf50;
+      --accent-color: #2e7d32;
+      --bg-color: #f4f4f4;
+      --font-color: #333;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--font-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.25rem;
+      margin-bottom: 20px;
+    }
+
+    #clicker-button {
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      background-color: var(--main-color);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.1s ease, background-color 0.3s ease;
+    }
+
+    #clicker-button:hover {
+      background-color: var(--accent-color);
+      transform: scale(1.05);
+    }
+
+    #clicker-button:active {
+      transform: scale(0.97);
+    }
+
+    a {
+      margin-top: 30px;
+      display: inline-block;
+      text-decoration: none;
+      color: var(--main-color);
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+
+    a:hover {
+      color: var(--accent-color);
+    }
+  </style>
+</head>
+<body>
+  <h1>Clicker Game</h1>
+  <p>Score: <span id="score">0</span></p>
+  <button id="clicker-button">Click me!</button>
+  <a href="/">← Back to Home</a>
+
+  <script>
+    let score = 0;
+    const scoreEl = document.getElementById("score");
+    document.getElementById("clicker-button").addEventListener("click", () => {
+      score++;
+      scoreEl.textContent = score;
+    });
+  </script>
 </body>
 </html>
