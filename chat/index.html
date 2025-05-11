@@ -5,32 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Realtime Chat</title>
   <style>
-    /* Center the body */
+    /* Center the login section */
     body {
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
       height: 100vh;
       margin: 0;
       font-family: Arial, sans-serif;
     }
 
-    /* Center the title */
-    h1 {
-      text-align: center;
-      width: 100%;
-      margin-bottom: 30px; /* Add margin to separate the title from login buttons */
-    }
-
-    /* Center the login section */
     #login-section {
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    /* Button styling */
     button {
       padding: 10px 20px;
       margin: 10px;
@@ -103,7 +93,15 @@
         .catch(error => alert("Login failed: " + error.message));
     };
 
-    logoutBtn.onclick = () => signOut(auth);
+    logoutBtn.onclick = () => {
+      signOut(auth)
+        .then(() => {
+          loginSection.style.display = "flex";
+          chatSection.style.display = "none";
+          logoutBtn.style.display = "none";
+        })
+        .catch(error => alert("Logout failed: " + error.message));
+    };
 
     auth.onAuthStateChanged(user => {
       if (user) {
@@ -111,7 +109,7 @@
         chatSection.style.display = "block";
         logoutBtn.style.display = "inline-block";
       } else {
-        loginSection.style.display = "block";
+        loginSection.style.display = "flex";
         chatSection.style.display = "none";
         logoutBtn.style.display = "none";
       }
