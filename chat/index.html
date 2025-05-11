@@ -24,6 +24,45 @@
       flex-direction: column;
       align-items: center;
     }
+    :root {
+      --btn-bg: #4caf50;
+      --btn-bg-hover: #45a049;
+      --btn-bg-active: #388e3c;
+      --btn-color: #fff;
+      --btn-radius: 12px;
+      --btn-shadow: rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Apply only to your login buttons */
+    #login-section button {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      background-color: var(--btn-bg);
+      color: var(--btn-color);
+      border: none;
+      border-radius: var(--btn-radius);
+      padding: 12px 24px;
+      margin: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px var(--btn-shadow);
+      transition:
+        transform 0.1s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+    
+    #login-section button:hover {
+      background-color: var(--btn-bg-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px var(--btn-shadow);
+    }
+    
+    #login-section button:active {
+      background-color: var(--btn-bg-active);
+      transform: translateY(0);
+      box-shadow: 0 3px 8px var(--btn-shadow);
+    }
     button {
       padding: 10px 20px;
       margin: 5px;
