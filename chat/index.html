@@ -1,193 +1,11 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-        }
-        #chat {
-            margin-top: 20px;
-        }
-        #messages {
-            border: 1px solid #ccc;
-            height: 200px;
-            overflow-y: scroll;
-            padding: 10px;
-        }
-        #message-input {
-            width: 80%;
-            padding: 10px;
-        }
-        #send-button {
-            padding: 10px;
-        }
-        #username-prompt {
-            display: none;
-        }
-        #logout-button {
-            margin-top: 20px;
-            padding: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div id="username-prompt">
-        <h2>Enter your username</h2>
-        <input id="username-input" type="text" placeholder="Username">
-        <button id="set-username-button">Set Username</button>
-        <p id="username-error" style="color: red; display: none;">Invalid username. Must start with a letter and contain only letters, numbers, and underscores.</p>
-    </div>
-    <div id="chat-section" style="display: none;">
-        <h2>Chat</h2>
-        <div id="messages"></div>
-        <input id="message-input" type="text" placeholder="Type a message...">
-        <button id="send-button">Send</button>
-        <button id="logout-button">Logout</button>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <script>
-        const socket = io();
-        const messages = document.getElementById('messages');
-        const messageInput = document.getElementById('message-input');
-        const sendButton = document.getElementById('send-button');
-        const usernamePrompt = document.getElementById('username-prompt');
-        const chatSection = document.getElementById('chat-section');
-        const usernameInput = document.getElementById('username-input');
-        const setUsernameButton = document.getElementById('set-username-button');
-        const logoutButton = document.getElementById('logout-button');
-        const usernameError = document.getElementById('username-error');
-
-        function isValidUsername(username) {
-            const regex = /^[a-zA-Z][a-zA-Z0-9_]*$/;
-            return regex.test(username);
-        }
-
-        function setUsername() {
-            const username = usernameInput.value;
-            if (isValidUsername(username)) {
-                localStorage.setItem('username', username);
-                usernamePrompt.style.display = 'none';
-                chatSection.style.display = 'block';
-                usernameError.style.display = 'none';
-            } else {
-                usernameError.style.display = 'block';
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('username');
-            usernamePrompt.style.display = 'block';
-            chatSection.style.display = 'none';
-        }
-
-        setUsernameButton.addEventListener('click', setUsername);
-        usernameInput.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                setUsername();
-            }
-        });
-        logoutButton.addEventListener('click', logout);
-
-        const storedUsername = localStorage.getItem('username');
-        if (storedUsername) {
-            usernamePrompt.style.display = 'none';
-            chatSection.style.display = 'block';
-        } else {
-            usernamePrompt.style.display = 'block';
-            chatSection.style.display = 'none';
-        }
-
-        socket.on('message', function(msg) {
-            const messageElement = document.createElement('div');
-            messageElement.innerHTML = msg;
-            messages.appendChild(messageElement);
-            messages.scrollTop = messages.scrollHeight;
-        });
-
-        sendButton.addEventListener('click', function() {
-            const message = messageInput.value;
-            const username = localStorage.getItem('username');
-            if (message && username) {
-                socket.send(username + ': ' + message);
-                messageInput.value = '';
-            }
-        });
-
-        messageInput.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                sendButton.click();
-            }
-        });
-    </script>
-    <a href="/">Home</a>
-</body>
-</html>
- -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Realtime Chat</title>
-    <style>
-    * {
-      box-sizing: border-box;
-    }
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: sans-serif;
-    }
-    body {
-      display: flex;
-      flex-direction: column;
-    }
-    h1 {
-      text-align: center;
-      margin: 1rem 0;
-    }
-    #login-section {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    #chat-section {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      max-width: 800px;
-      margin: auto;
-      width: 100%;
-    }
-    #messages {
-      flex: 1;
-      border: 1px solid #ccc;
-      padding: 1rem;
-      overflow-y: auto;
-      background: #f9f9f9;
-    }
-    #input-bar {
-      display: flex;
-      border-top: 1px solid #ccc;
-      padding: 0.5rem;
-      background: #fff;
-    }
-    #message {
-      flex: 1;
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    #send {
-      margin-left: 10px;
-      padding: 10px 20px;
-      font-size: 16px;
-    }
+  <style>
+    /* Add your optimized styles here */
   </style>
 </head>
 <body>
@@ -216,13 +34,13 @@
     import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyBAGQRsiPhocdLr6jFXvkarCsVUmDCsE6E",
-      authDomain: "mywebharence.firebaseapp.com",
-      databaseURL: "https://mywebharence-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "mywebharence",
-      storageBucket: "mywebharence.firebasestorage.app",
-      messagingSenderId: "760501935708",
-      appId: "1:760501935708:web:ad6a2abbce9ac3f3181099"
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -239,25 +57,21 @@
     const messageInput = document.getElementById("message");
     const messagesDiv = document.getElementById("messages");
 
-    // Google Login
     googleLoginBtn.onclick = () => {
       const provider = new GoogleAuthProvider();
-      signInWithPopup(auth, provider).catch(console.error);
+      signInWithPopup(auth, provider)
+        .catch(error => alert("Login failed: " + error.message));
     };
 
-    // Simple Email Login Prompt (basic)
     emailLoginBtn.onclick = () => {
       const email = prompt("Enter email:");
       const password = prompt("Enter password:");
-      signInWithEmailAndPassword(auth, email, password).catch(console.error);
+      signInWithEmailAndPassword(auth, email, password)
+        .catch(error => alert("Login failed: " + error.message));
     };
 
-    // Logout
-    logoutBtn.onclick = () => {
-      signOut(auth);
-    };
+    logoutBtn.onclick = () => signOut(auth);
 
-    // Auth state change
     auth.onAuthStateChanged(user => {
       if (user) {
         loginSection.style.display = "none";
@@ -270,7 +84,6 @@
       }
     });
 
-    // Send message
     sendBtn.onclick = () => {
       const message = messageInput.value.trim();
       const user = auth.currentUser;
@@ -279,17 +92,11 @@
           username: user.displayName || user.email,
           message: message
         })
-          .then(() => {
-            messageInput.value = "";
-          })
-          .catch((error) => {
-            console.error("Error sending message:", error);
-            alert("Something went wrong, please try again later.");
-          });
+          .then(() => messageInput.value = "")
+          .catch(error => alert("Error sending message: " + error.message));
       }
     };
 
-    // Receive messages
     onChildAdded(messagesRef, (data) => {
       const { username, message } = data.val();
       const msgEl = document.createElement("div");
