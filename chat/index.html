@@ -5,32 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Realtime Chat</title>
   <style>
-    /* Center the login section */
     body {
       display: flex;
       justify-content: center;
       align-items: center;
+      flex-direction: column;
       height: 100vh;
       margin: 0;
       font-family: Arial, sans-serif;
     }
-
-    #login-section {
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #login-section, #chat-section {
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-
     button {
       padding: 10px 20px;
-      margin: 10px;
+      margin: 5px;
       font-size: 16px;
       cursor: pointer;
     }
-
-    /* Chat section styles */
-    #chat-section {
-      text-align: center;
+    #messages {
+      width: 300px;
+      height: 200px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    #input-bar {
+      display: flex;
+      width: 300px;
+    }
+    #message {
+      flex: 1;
+      padding: 8px;
+    }
+    #send {
+      padding: 8px 12px;
+      margin-left: 5px;
     }
   </style>
 </head>
@@ -40,16 +57,20 @@
   <div id="login-section">
     <button id="google-login">Login with Google</button>
     <button id="email-login">Login with Email</button>
-    <button id="logout" style="display:none;">Logout</button>
   </div>
 
   <div id="chat-section" style="display:none;">
+    <!-- Logout button here -->
+    <button id="logout" style="align-self:flex-end; margin-bottom:10px;">Logout</button>
+
     <div id="messages"></div>
-    <input type="text" id="message" placeholder="Type a message..." />
-    <button id="send">Send</button>
+
+    <div id="input-bar">
+      <input type="text" id="message" placeholder="Type a message..." />
+      <button id="send">Send</button>
+    </div>
   </div>
 
-  <!-- Firebase SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
@@ -82,57 +103,43 @@
 
     googleLoginBtn.onclick = () => {
       const provider = new GoogleAuthProvider();
-      signInWithPopup(auth, provider)
-        .catch(error => alert("Login failed: " + error.message));
+      signInWithPopup(auth, provider).catch(e => alert(e.message));
     };
 
     emailLoginBtn.onclick = () => {
       const email = prompt("Enter email:");
       const password = prompt("Enter password:");
-      signInWithEmailAndPassword(auth, email, password)
-        .catch(error => alert("Login failed: " + error.message));
+      signInWithEmailAndPassword(auth, email, password).catch(e => alert(e.message));
     };
 
-    logoutBtn.onclick = () => {
-      signOut(auth)
-        .then(() => {
-          loginSection.style.display = "flex";
-          chatSection.style.display = "none";
-          logoutBtn.style.display = "none";
-        })
-        .catch(error => alert("Logout failed: " + error.message));
-    };
+    logoutBtn.onclick = () => signOut(auth).catch(e => alert(e.message));
 
     auth.onAuthStateChanged(user => {
       if (user) {
         loginSection.style.display = "none";
-        chatSection.style.display = "block";
-        logoutBtn.style.display = "inline-block";
+        chatSection.style.display = "flex";
       } else {
         loginSection.style.display = "flex";
         chatSection.style.display = "none";
-        logoutBtn.style.display = "none";
       }
     });
 
     sendBtn.onclick = () => {
-      const message = messageInput.value.trim();
+      const msg = messageInput.value.trim();
       const user = auth.currentUser;
-      if (message && user) {
+      if (msg && user) {
         push(messagesRef, {
           username: user.displayName || user.email,
-          message: message
-        })
-          .then(() => messageInput.value = "")
-          .catch(error => alert("Error sending message: " + error.message));
+          message: msg
+        }).then(() => messageInput.value = "");
       }
     };
 
-    onChildAdded(messagesRef, (data) => {
+    onChildAdded(messagesRef, data => {
       const { username, message } = data.val();
-      const msgEl = document.createElement("div");
-      msgEl.textContent = `${username}: ${message}`;
-      messagesDiv.appendChild(msgEl);
+      const div = document.createElement("div");
+      div.textContent = `${username}: ${message}`;
+      messagesDiv.appendChild(div);
       messagesDiv.scrollTop = messagesDiv.scrollHeight;
     });
   </script>
