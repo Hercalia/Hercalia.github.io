@@ -278,8 +278,14 @@
         push(messagesRef, {
           username: user.displayName || user.email,
           message: message
-        });
-        messageInput.value = "";
+        })
+          .then(() => {
+            messageInput.value = "";
+          })
+          .catch((error) => {
+            console.error("Error sending message:", error);
+            alert("Something went wrong, please try again later.");
+          });
       }
     };
 
