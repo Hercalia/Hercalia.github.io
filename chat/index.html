@@ -152,29 +152,39 @@
       padding: 10px;
       font-size: 16px;
     }
-    #username {
-      width: 40%;
-    }
     #message {
-      width: 50%;
+      width: 60%;
+    }
+    #login-section, #chat-section {
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
   <h1>Firebase Chat</h1>
 
-  <div id="messages"></div>
+  <div id="login-section">
+    <button id="google-login">Login with Google</button>
+    <button id="email-login">Login with Email</button>
+    <button id="logout" style="display:none;">Logout</button>
+  </div>
 
-  <input type="text" id="username" placeholder="Username" />
-  <input type="text" id="message" placeholder="Type a message..." />
-  <button id="send">Send</button>
+  <div id="chat-section" style="display:none;">
+    <div id="messages"></div>
+    <input type="text" id="message" placeholder="Type a message..." />
+    <button id="send">Send</button>
+  </div>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
 
   <script>
-    // Your Firebase config
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyBAGQRsiPhocdLr6jFXvkarCsVUmDCsE6E",
       authDomain: "mywebharence.firebaseapp.com",
@@ -185,29 +195,71 @@
       appId: "1:760501935708:web:ad6a2abbce9ac3f3181099"
     };
 
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const messagesRef = db.ref("messages");
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    const messagesRef = ref(db, "messages");
 
-    // Send button
-    document.getElementById("send").addEventListener("click", () => {
-      const username = document.getElementById("username").value.trim();
-      const message = document.getElementById("message").value.trim();
-      if (username && message) {
-        messagesRef.push({ username, message });
-        document.getElementById("message").value = "";
+    const loginSection = document.getElementById("login-section");
+    const chatSection = document.getElementById("chat-section");
+    const googleLoginBtn = document.getElementById("google-login");
+    const emailLoginBtn = document.getElementById("email-login");
+    const logoutBtn = document.getElementById("logout");
+    const sendBtn = document.getElementById("send");
+    const messageInput = document.getElementById("message");
+    const messagesDiv = document.getElementById("messages");
+
+    // Google Login
+    googleLoginBtn.onclick = () => {
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider).catch(console.error);
+    };
+
+    // Simple Email Login Prompt (basic)
+    emailLoginBtn.onclick = () => {
+      const email = prompt("Enter email:");
+      const password = prompt("Enter password:");
+      signInWithEmailAndPassword(auth, email, password).catch(console.error);
+    };
+
+    // Logout
+    logoutBtn.onclick = () => {
+      signOut(auth);
+    };
+
+    // Auth state change
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loginSection.style.display = "none";
+        chatSection.style.display = "block";
+        logoutBtn.style.display = "inline-block";
+      } else {
+        loginSection.style.display = "block";
+        chatSection.style.display = "none";
+        logoutBtn.style.display = "none";
       }
     });
 
-    // Listen for messages
-    messagesRef.on("child_added", (data) => {
+    // Send message
+    sendBtn.onclick = () => {
+      const message = messageInput.value.trim();
+      const user = auth.currentUser;
+      if (message && user) {
+        push(messagesRef, {
+          username: user.displayName || user.email,
+          message: message
+        });
+        messageInput.value = "";
+      }
+    };
+
+    // Receive messages
+    onChildAdded(messagesRef, (data) => {
       const { username, message } = data.val();
       const msgEl = document.createElement("div");
       msgEl.textContent = `${username}: ${message}`;
-      document.getElementById("messages").appendChild(msgEl);
-      const messagesBox = document.getElementById("messages");
-      messagesBox.scrollTop = messagesBox.scrollHeight;
+      messagesDiv.appendChild(msgEl);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
     });
   </script>
 </body>
